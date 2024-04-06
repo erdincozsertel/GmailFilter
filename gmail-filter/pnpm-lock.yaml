@@ -14,10 +14,10 @@ dependencies:
 
 devDependencies:
   '@types/react':
-    specifier: ^18.2.66
+    specifier: ^18.2.74
     version: 18.2.74
   '@types/react-dom':
-    specifier: ^18.2.22
+    specifier: ^18.2.24
     version: 18.2.24
   '@vitejs/plugin-react-swc':
     specifier: ^3.5.0
@@ -37,6 +37,9 @@ devDependencies:
   gh-pages:
     specifier: ^6.1.1
     version: 6.1.1
+  typescript:
+    specifier: ^5.4.4
+    version: 5.4.4
   vite:
     specifier: ^5.2.0
     version: 5.2.8
@@ -2302,6 +2305,12 @@ packages:
       has-proto: 1.0.3
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
+    dev: true
+
+  /typescript@5.4.4:
+    resolution: {integrity: sha512-dGE2Vv8cpVvw28v8HCPqyb08EzbBURxDpuhJvTrusShUfGnhHBafDsLdS1EhhxyL6BJQE+2cT3dDPAv+MQ6oLw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
     dev: true
 
   /unbox-primitive@1.0.2:

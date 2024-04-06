@@ -18,10 +18,19 @@ export enum UserMode {
 export class Filter {
   title: string;
   entries: Entry[];
+  constructor(title: string, entries: Entry[]) {
+    this.title = title;
+    this.entries = entries;
+  }
 }
 export class Entry {
   title: string;
   properties: Property[];
+
+  constructor(title: string, properties: Property[]) {
+    this.title = title;
+    this.properties = properties;
+  }
 }
 export class Property {
   name: string;
@@ -32,6 +41,24 @@ export class Property {
   section: Section;
   value: [string, string] | string | boolean | number;
   disabled?: boolean;
+
+  constructor(
+    name: string,
+    visableName: string,
+    type: string,
+    description: string,
+    visibility: string,
+    section: Section,
+    value: [string, string] | string | boolean | number
+  ) {
+    this.name = name;
+    this.visableName = visableName;
+    this.type = type;
+    this.description = description;
+    this.visable = UserMode[visibility as keyof typeof UserMode];
+    this.section = section;
+    this.value = value;
+  }
 }
 
 export const propertyList = [
