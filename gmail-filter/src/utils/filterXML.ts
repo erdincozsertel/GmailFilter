@@ -1,6 +1,6 @@
 import { Category, Filter, Entry, Property, Section } from "./properties";
-export function generateOutputXML(filiters) {
-  let entryXML = generateFilterEntry(filiters);
+export function generateOutputXML(filter: Filter) {
+  let entryXML = generateFilterEntry(filter);
   return `<?xml version= "1.0 " encoding= "UTF-8 "?>
     <feed  xmlns= "http://www.w3.org/2005/Atom " xmlns:apps= "http://schemas.google.com/apps/2006 ">
         <title>Mail Filiters</title>
@@ -8,7 +8,7 @@ export function generateOutputXML(filiters) {
     </feed>`;
 }
 
-function generateFilterEntry(filter) {
+function generateFilterEntry(filter : Filter) {
   let entries = ``;
   for (const entry of filter.entries) {
     let properties = ``;
