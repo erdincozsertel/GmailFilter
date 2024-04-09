@@ -28,7 +28,7 @@ function App() {
       return false;
     }
   }
-  function propertyMapper(property: Property, entryIndex: number) {
+  function propertyMapper(property: Property, entryId: number) {
     return (
       <div
         key={property.name}
@@ -46,10 +46,13 @@ function App() {
           id={property.name}
           name={property.name}
           onChange={(event) => {
-            const propertyIndex = filters.entries[
-              entryIndex
-            ].properties.findIndex((x) => x.name === property.name);
-            handleEntry(event.target.value, entryIndex, propertyIndex);
+            handleEntry(
+              property.type === "boolean"
+                ? event.target.checked
+                : event.target.value,
+              entryId,
+              property
+            );
           }}
           // checked={count === x.visable}
           //TODO:Ozel Durum Kontrol et
@@ -58,18 +61,18 @@ function App() {
       </div>
     );
   }
-  function createFilter(entry: Entry, entryIndex: number) {
+  function entryMapper(entry: Entry) {
     return (
       <div className="w-full grid grid-cols-1 divide-y">
         <h1 className="w-full text-gray-800 text-3xl font-bold mb-6">Filter</h1>
         <div className="flex flex-wrap -mx-3 mb-6">
-          {entry.properties
+          {propertyList
             .filter(
               (property) =>
-                property.section === Section.Filiter &&
+                property.section === "Filter" &&
                 VisiblityHelper(usermode, property)
             )
-            .map((property) => propertyMapper(property, entryIndex))}
+            .map((property) => propertyMapper(property, entry.id))}
         </div>
         <h1 className="w-full text-gray-800 text-3xl font-bold mb-6">Action</h1>
         <div className="flex flex-wrap -mx-3 mb-6">
@@ -79,24 +82,24 @@ function App() {
                 property.section === "Action" &&
                 VisiblityHelper(usermode, property)
             )
-            .map((property) => propertyMapper(property, entryIndex))}
+            .map((property) => propertyMapper(property, entry.id))}
         </div>
       </div>
     );
   }
   const [filters, setFilters] = useState<Filter>({
     title: "Filter 1",
-    id: 1,
-    entries: [{ title: "Entry 0", id: 0, properties: propertyList }],
+    id: 0,
+    entries: [{ title: "Entry 0", id: 0, properties: [] as Property[] }],
   });
 
   function addEntry() {
-    let max = Math.max(...filters.entries.map((entry) => entry.id)) + 2;
+    let max = Math.max(...filters.entries.map((entry) => entry.id)) + 1;
     setFilters({
       ...filters,
       entries: [
         ...filters.entries,
-        { title: `Entry ${max}`, id: max, properties: propertyList },
+        { title: `Entry ${max}`, id: max, properties: [] as Property[] },
       ],
     });
   }
@@ -106,27 +109,63 @@ function App() {
       entries: prev.entries.filter((x) => x.id !== id),
     }));
   }
-  function handleEntry2(newValue: any) {
-    setFilters((prev) => ({
-      ...prev,
-      entries: prev.entries.map((entry) => ({
-        ...entry,
-        properties: entry.properties.map((property) => ({
-          ...property,
-          value: newValue,
-        })),
-      })),
-    }));
+
+  function handleProperty(
+    newValue: any,
+    properties: Property[],
+    property: Property,
+    entryIndex: number
+  ): Property[] {
+    if (entryIndex >= 0) {
+      properties[entryIndex].value = newValue;
+    } else {
+      properties.push({ ...property, value: newValue });
+    }
+    return properties;
   }
 
-  function handleEntry(
-    newValue: any,
-    entryIndex: number,
-    propertyIndex: number
-  ) {
-    let tempFilter = filters;
-    tempFilter.entries[entryIndex].properties[propertyIndex].value = newValue;
-    setFilters(tempFilter);
+  function handleEntry2(newValue: any, entryId: number, property: Property) {
+    const updatedEntries = [...filters.entries].map((entry) => {
+      if (entry.id !== entryId) return entry;
+      const entryIndex = entry.properties.findIndex(
+        (prop) => prop.name === property.name
+      );
+      const updatedProperties = handleProperty(
+        newValue,
+        entry.properties,
+        property,
+        entryIndex
+      );
+
+      return {
+        ...entry,
+        properties: [...updatedProperties],
+      };
+    });
+
+    setFilters((prev) => ({ ...prev, entries: updatedEntries }));
+  }
+
+  function handleEntry(newValue: any, entryId: number, property: Property) {
+    const updatedEntries = [...filters.entries].map((entry) => {
+      if (entry.id !== entryId) return entry;
+      const entryIndex = entry.properties.findIndex(
+        (prop) => prop.name === property.name
+      );
+      const updatedProperties = handleProperty(
+        newValue,
+        entry.properties,
+        property,
+        entryIndex
+      );
+
+      return {
+        ...entry,
+        properties: [...updatedProperties],
+      };
+    });
+
+    setFilters((prev) => ({ ...prev, entries: updatedEntries }));
   }
 
   function saveFilters() {
@@ -134,9 +173,9 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col space-y-4 bg-gradient-to-t from-slate-300 to-gray-50">
+    <div className="h-screen w-screen flex flex-col bg-gradient-to-t from-slate-300 to-gray-50">
       {/* Mode Selector */}
-      <div className="relative mt-1">
+      <div className="my-5 flex justify-center w-full">
         <select
           onChange={(event) =>
             UserModeChange(
@@ -148,24 +187,36 @@ function App() {
           name="modeSelector"
         >
           <option value="EasyMode">Easy Mode</option>
-          <option value="NormalMode">Normal Mode</option>
-          <option value="ExpertMode">Expert Mode</option>
+          <option value="NormalMode" disabled>Normal Mode</option>
+          <option value="ExpertMode" disabled>Expert Mode</option>
         </select>
       </div>
+      <></>
       {/* Filters*/}
-      {filters.entries.map((entry, entryIndex) => (
-        <div key={entry.id}>
-          {createFilter(entry, entryIndex)}
-          {filters.entries.length > 1 && (
-            <button onClick={() => removeEntry(entry.id)}>Remove</button>
-          )}
+      <div className="overflow-y-auto scroll-m-2 my-5 space-y-4 border-solid border-t-4 border-b-4 border-gray-600/30 rounded-lg">
+        <div className="mx-20">
+          {filters.entries.map((entry, entryIndex) => (
+            <div
+              className="my-2 border-solid border-2 border-gray-600/45 rounded-lg"
+              key={entry.id}
+            >
+              {entryMapper(entry)}
+              {filters.entries.length > 1 && (
+                <button className="m-5" onClick={() => removeEntry(entry.id)}>
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+          {/* Add*/}
+          <div className="flex justify-center">
+            <button onClick={addEntry}>Add</button>
+          </div>
         </div>
-      ))}
-      {/* Add*/}
-      <div className="flex justify-center">
-        <button onClick={addEntry}>Add</button>
       </div>
-      <div className="flex justify-center">
+      <div className="flex-grow"></div>
+      {/* Save*/}
+      <div className="fixed-bottom my-5 flex justify-center w-full">
         <button onClick={saveFilters}>Save</button>
       </div>
     </div>
