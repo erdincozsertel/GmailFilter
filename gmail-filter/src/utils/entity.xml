@@ -1,0 +1,27 @@
+<!-- TODO: Test -->
+<entry>
+        <category  term='filter'></category>
+        <title>Mail Filter 1</title>
+        <apps:property name='from' value='Someone@SomeDomain.com'/>
+        <apps:property name='to' value='Someone@SomeDomain.com'/>
+		<apps:property name='cc' value='Someone@SomeDomain.com'/>
+        <apps:property name='bcc' value='Someone@SomeDomain.com'/>
+        <apps:property name='subject' value='ghi'/>
+        <apps:property name='doesNotHaveTheWord' value='abc'/>
+        <apps:property name='hasAttachment' value='true'/>
+        <apps:property name='excludeChats' value='true'/>
+        <apps:property name='shouldStar' value='true'/>
+		<apps:property name='shouldArchive' value='true'/>
+		<apps:property name='smartLabelToApply' value='^smartlabel_notification'/>
+		/*
+		category:primary
+		category:social
+		category:notification
+		category:group
+		category:promo
+		*/
+        <apps:property name='shouldTrash' value='false'/>
+        <apps:property name='shouldNeverSpam' value='true'/>
+        <apps:property name='shouldAlwaysMarkAsImportant' value='true'/>
+        <apps:property name='size' value='2000'/>
+    </entry>
