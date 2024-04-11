@@ -1,11 +1,10 @@
 //TODO: test
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import {
   Entry,
   Filter,
   Property,
-  Section,
   UserMode,
   propertyList,
 } from "./utils/properties";
